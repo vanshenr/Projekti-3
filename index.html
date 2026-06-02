@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kauppalista 2.0</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> <!-- Bootstrap CSS tuodaan CDN:stä -->
+  <style>
+    .edit-input {display: none;} /* Piilotetaan muokkauskenttä aluksi. */
+  </style>
+</head>
+<body>
+  <div class="container mt-5"> <!-- Bootstrap‑kontainer keskitettynä -->
+    <h1 class="text-center mb-4">Kauppalista 2.0</h1>
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-body">
+            <form id="todo-form"> <!-- Lomake tuotteen lisäämiseen -->
+              <div class="input-group mb-3"> <!-- Bootstrap‑inputryhmä -->
+                <input type="text" class="form-control" id="todo-input" placeholder="Lisää tuote..." aria-label="Lisää tuote"> <!-- Tekstikenttä -->
+                <button class="btn btn-primary" type="submit">Lisää</button> <!-- Lisää‑nappi ja tuotteen lisäys -->
+              </div>
+            </form>
+
+            <div id="alert-container" aria-live="polite" class="mb-3"></div> <!-- Ilmoitukset käyttäjälle -->
+
+            <ul class="list-group" id="todo-list" aria-label="Kauppalista"></ul> <!-- Lista tuotteista -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery tuodaan CDN:stä -->
+
+  <script>
+    $(function () { // skriptit
+      const $form = $('#todo-form'); // Lomake
+      const $input = $('#todo-input'); // Tekstikenttä
+      const $list = $('#todo-list'); // Lista
+      const $alerts = $('#alert-container'); // Ilmoitukset
+
+      function showAlert(message, type = 'warning') { // Ilmoituksen näyttäminen 3 sekunnin ajan
+        const $a = $(`
+          <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" aria-label="Sulje"></button>
+          </div>
+        `);
+        $a.find('.btn-close').on('click', () => $a.remove()); // Sulje‑nappi ilmoituksessa
+        $alerts.empty().append($a);
+        setTimeout(() => { $a.fadeOut(300, () => $a.remove()); }, 3000); // Poista ilmoitus 3 sekunnin kuluttua, fadeOut tekee poistumisen pehmeäksi
+      }
+
+      function normalize(text) { // Tekstin normalisointi vertailua varten
+        return text.trim().toLowerCase();
+      }
+
+      function isDuplicate(text, $excludeLi = null) { // Tarkistaa onko tuote jo listalla.
+        const norm = normalize(text);
+        let dup = false;
+        $list.children('li').each(function () { // Käydään läpi kaikki listan tuotteet
+          if ($excludeLi && this === $excludeLi[0]) return;
+          const existing = normalize($(this).find('.task-text').text());
+          if (existing === norm) { dup = true; return false; }
+        });
+        return dup;
+      }
+
+      function createListItem(task) { // Luo listaan uusi tuote‑elementti
+        const $li = $(`
+          <li class="list-group-item d-flex justify-content-between align-items-center"> 
+            <span class="task-text"></span>
+            <input type="text" class="form-control edit-input" />
+            <div class="btn-group"> 
+              <button class="btn btn-danger btn-sm delete-btn" type="button" title="Poista">&#x2715;</button>
+              <button class="btn btn-primary btn-sm edit-btn" type="button" title="Muokkaa">&#9998;</button>
+            </div>
+          </li>
+        `);
+        $li.find('.task-text').text(task); // Näytä lisätyn tuotteen teksti listassa
+        $li.find('.edit-input').val(task); // Aseta muokkauskentän arvo samaksi kuin tuotteen nimi, jotta se on valmiina muokattavaksi
+        return $li; 
+      }
+
+      $form.on('submit', function (e) { // Lomakkeen lähetys tapahtuu, kun klikataan "Lisää"‑nappia tai painaa Enteriä tekstikentässä
+        e.preventDefault(); 
+        const val = $input.val().trim(); // Poistetaan ylimääräiset välilyönnit
+        if (val.length < 2) { // Varmistetaan, että tuotteen nimi on vähintään 2 merkkiä pitkä
+          showAlert('Tuotteen nimen on oltava vähintään 2 merkkiä pitkä.', 'warning'); // Näytä varoitus, jos nimi on liian lyhyt
+          $input.focus(); // Aseta tekstikenttä aktiiviseksi, jotta käyttäjä voi korjata syötteen helposti
+          return;
+        }
+        if (isDuplicate(val)) { // Tarkistetaan, onko tuote jo listalla
+          showAlert('Tämä tuote on jo kauppalistassa.', 'warning'); // Näytä varoitus, jos tuote on jo listalla
+          $input.focus(); // Aseta tekstikenttä aktiiviseksi, jotta käyttäjä voi korjata syötteen helposti
+          return;
+        }
+        const $item = createListItem(val); // Luo uusi listaelementti uudella tuotteella
+        $list.append($item); // Lisää uusi tuote listaan
+        $input.val('').focus(); // Tyhjennä tekstikenttä ja aseta se aktiiviseksi uudelleen, jotta käyttäjä voi helposti lisätä seuraavan tuotteen
+        showAlert('Tuote lisätty.', 'success'); // Näytä onnistumisilmoitus, kun tuote on lisätty onnistuneesti
+      });
+
+      $list.on('click', '.delete-btn', function () { // Poista tuote listalta, kun klikataan "Poista"‑nappia
+        $(this).closest('li').remove(); // Poista lähin listaelementti, joka sisältää klikattavan napin
+      });
+
+      $list.on('click', '.edit-btn', function () { // Näyttää piilotetun inputin, vaihtaa napin ikonia, validoi ja tallentaa muutoksen, sekä tarkistaa pituuden ja duplikaatin muokkauksen yhteydessä
+        const $btn = $(this); 
+        const $li = $btn.closest('li');
+        const $text = $li.find('.task-text');
+        const $inputEdit = $li.find('.edit-input');
+
+        const isEditing = $inputEdit.is(':visible'); // Tarkista, onko muokkaustila aktiivinen
+        if (!isEditing) { // Muokkaustila otetaan käyttöön
+          $text.hide(); // Piilotetaan tuotteen teksti, jotta muokkauskenttä on näkyvissä
+          $inputEdit.show().focus().select(); // Näytä muokkauskenttä, aseta se aktiiviseksi ja valitse sen sisältö, jotta käyttäjä voi helposti muuttaa tuotteen nimeä
+          $btn.html('&#10004;'); // Vaihda napin ikoni tallennusikoniin kynä->check
+        } else { 
+          const newVal = $inputEdit.val().trim(); // Poistetaan ylimääräiset välilyönnit muokkauskentästä
+          if (newVal.length < 2) { // Varmistetaan, että tuotteen nimi on vähintään 2 merkkiä pitkä
+            showAlert('Tuotteen nimen on oltava vähintään 2 merkkiä pitkä.', 'warning'); // Näytä varoitus, jos nimi on liian lyhyt
+            $inputEdit.focus(); // Aseta muokkauskenttä aktiiviseksi, jotta käyttäjä voi korjata syötteen helposti
+            return;
+          }
+          if (isDuplicate(newVal, $li)) { // Tarkistetaan, onko uusi nimi jo listalla (poislukien nykyinen tuote)
+            showAlert('Tämä tuote on jo kauppalistassa.', 'warning'); // Näytä varoitus, jos tuote on jo listalla
+            $inputEdit.focus(); // Aseta muokkauskenttä aktiiviseksi, jotta käyttäjä voi korjata syötteen helposti
+            return;
+          }
+          $text.text(newVal).show(); // Päivitetään tuotteen teksti uudella nimellä
+          $inputEdit.hide(); // Piilotetaan muokkauskenttä, koska muokkaus on valmis
+          $btn.html('&#9998;'); // Vaihda napin ikoni takaisin check->kynä
+          showAlert('Muutos tallennettu.', 'success'); // Näytä onnistumisilmoitus, kun muutos on tallennettu onnistuneesti
+        }
+      });
+
+      $list.on('keydown', '.edit-input', function (e) { // Enter hyväksyy ja esc peruuttaa muokkauksen
+        const $inputEdit = $(this); //
+        const $li = $inputEdit.closest('li');
+        const $btn = $li.find('.edit-btn');
+        if (e.key === 'Enter') { // tallenna muutos enterillä
+          e.preventDefault();
+          $btn.trigger('click'); // Simuloi edit-btn klikkausta, joka tallentaa muutoksen ja tarkistaa validoinnin
+        } else if (e.key === 'Escape') { // peruuta muokkaus escillä
+          $inputEdit.val($li.find('.task-text').text());  // Palauta muokkauskentän arvo alkuperäiseksi, koska muokkaus on peruutettu
+          $inputEdit.hide(); // Piilotetaan muokkauskenttä, koska muokkaus on peruutettu
+          $li.find('.task-text').show(); // Näytä tuotteen teksti, koska muokkaus on peruutettu
+          $btn.html('&#9998;'); // Vaihda napin ikoni takaisin check->kynä
+        }
+      });
+    });
+  </script>
+</body>
+</html>
