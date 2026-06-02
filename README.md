@@ -1,8 +1,8 @@
 Projekti 3: JS-sovellus ulkoisia kirjastoja käyttäen. Projektin nimi: Kauppalista 2.0 ja projektin tekijä Henri Vänskä
 
 Verkkolinkit:
-Pääset julkaistuun sovellukseen käsiksi osoitteessa google.com
-Linkki projektin videoesittelyyn google.com
+Pääset julkaistuun sovellukseen käsiksi osoitteessa https://kauppalista2.netlify.app/
+Linkki projektin videoesittelyyn https://video.laurea.fi/media/Projekti%203%3A%20JS-sovellus%20ulkoisia%20kirjastoja%20k%C3%A4ytt%C3%A4en/0_sipckztl)
 
 Oma arvio työstä ja oman osaamisen kehittymisestä
 Mielestäni onnistuin hyvin päivittämään kurssin projekti 1 tekemäni kauppalista sovelluksen. Tämä 2.0 versio on käyttöliittymältään miellyttävämpi ja sisältää hienompia visuaalisija elementtejä kuin projekti 1. Olen oppinut projektin myötä ymmärtämään paremmin, sitä millaisia ominaisuuksia hyvä sovellus/verkkosivu vaatii. Lisäksi olen myös oppinut ymmärtämään sen että on olemassa todella paljon hyödyllisiä työkaluja, joita voi hyödyntää sovelluksissa, kuten tässä työssä on hyödynnetty esimerkiksi bootstrappia. Antaisin itselleni pisteitä seuraavasti: 9/10 p
@@ -37,6 +37,24 @@ Kurssin opettajan materiaaleista suuri apu tehtävän kokonaisvaltaisen ymmärry
 Edellämainittujen lisäksi projektissa on myös hyödynnetty Microsoftin Copilot tekoälyä koodin erilaisten vaihtoehtojen selvittelyyn ja niiden toimivuuden selvittelyyn.
 
 6.Lisenssi
-Valitse projektille lisenssi seuraamalla tätä opasta.
+MIT License
 
-Esimerkki: MIT-lisenssi @ tekijä
+Copyright (c) 2026 Henri Vänskä
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
